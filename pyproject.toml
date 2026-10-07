@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "auna"
+version = "0.1.0"
+description = "MVP de traductor LSA con eventos, cámara y avatar 2D"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+camera = ["opencv-python>=4.10.0"]
+
+[project.scripts]
+auna = "auna.main:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
