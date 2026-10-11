@@ -1,0 +1,47 @@
+<Window x:Class="Auna.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Auna"
+        Title="Auna" Width="980" Height="660" MinWidth="820" MinHeight="560"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource ColorFondo}"
+        FontFamily="{StaticResource Fuente}" FontSize="16"
+        Closing="AlCerrarVentana">
+
+    <!-- Qué hace cada comando: lo resuelve el código (MainWindow.xaml.cs) -->
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static local:Comandos.IrInicio}"     Executed="AlIrInicio" />
+        <CommandBinding Command="{x:Static local:Comandos.IrSenasTexto}" Executed="AlIrSenasTexto" />
+        <CommandBinding Command="{x:Static local:Comandos.IrTextoSenas}" Executed="AlIrTextoSenas" />
+        <CommandBinding Command="{x:Static local:Comandos.IrBiblioteca}" Executed="AlIrBiblioteca" />
+        <CommandBinding Command="{x:Static local:Comandos.AcercaDe}"     Executed="AlAcercaDe" />
+    </Window.CommandBindings>
+
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" FontSize="14">
+            <MenuItem Header="_Archivo">
+                <MenuItem Command="{x:Static local:Comandos.IrInicio}" />
+                <Separator />
+                <MenuItem Header="_Salir" InputGestureText="Alt+F4" Click="AlSalir" />
+            </MenuItem>
+            <MenuItem Header="_Modo">
+                <MenuItem Command="{x:Static local:Comandos.IrSenasTexto}" />
+                <MenuItem Command="{x:Static local:Comandos.IrTextoSenas}" />
+                <MenuItem Command="{x:Static local:Comandos.IrBiblioteca}" />
+            </MenuItem>
+            <MenuItem Header="A_yuda">
+                <MenuItem Command="{x:Static local:Comandos.AcercaDe}" />
+            </MenuItem>
+        </Menu>
+
+        <!-- Barra de estado: dice dónde estás y qué atajos podés usar -->
+        <StatusBar DockPanel.Dock="Bottom" FontSize="14">
+            <StatusBarItem>
+                <TextBlock x:Name="TextoEstado" />
+            </StatusBarItem>
+        </StatusBar>
+
+        <!-- Acá se muestra la pantalla actual -->
+        <ContentControl x:Name="Contenido" Focusable="False" />
+    </DockPanel>
+</Window>

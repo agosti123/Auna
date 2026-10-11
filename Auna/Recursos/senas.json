@@ -1,0 +1,14 @@
+[
+  { "palabra": "hola",        "categoria": "Saludos", "animacion": "animaciones/hola.gif" },
+  { "palabra": "chau",        "categoria": "Saludos", "animacion": "animaciones/chau.gif" },
+  { "palabra": "gracias",     "categoria": "Saludos", "animacion": "animaciones/gracias.gif" },
+  { "palabra": "por favor",   "categoria": "Saludos", "animacion": "animaciones/por_favor.gif" },
+  { "palabra": "perdón",      "categoria": "Saludos", "animacion": "animaciones/perdon.gif" },
+  { "palabra": "sí",          "categoria": "Respuestas", "animacion": "animaciones/si.gif" },
+  { "palabra": "no",          "categoria": "Respuestas", "animacion": "animaciones/no.gif" },
+  { "palabra": "no entiendo", "categoria": "Respuestas", "animacion": "animaciones/no_entiendo.gif" },
+  { "palabra": "ayuda",       "categoria": "Respuestas", "animacion": "animaciones/ayuda.gif" },
+  { "palabra": "remedio",     "categoria": "Salud",   "animacion": "animaciones/remedio.gif" },
+  { "palabra": "dolor",       "categoria": "Salud",   "animacion": "animaciones/dolor.gif" },
+  { "palabra": "receta",      "categoria": "Salud",   "animacion": "animaciones/receta.gif" }
+]

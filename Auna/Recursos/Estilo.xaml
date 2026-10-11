@@ -1,0 +1,55 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Paleta violeta de Auna. Todas las pantallas usan estos recursos. -->
+    <SolidColorBrush x:Key="ColorFondo"       Color="#F7F5FA" />
+    <SolidColorBrush x:Key="ColorTexto"       Color="#1E1A24" />
+    <SolidColorBrush x:Key="ColorTextoSuave"  Color="#6B6375" />
+    <SolidColorBrush x:Key="ColorAcento"      Color="#7030A0" />
+    <SolidColorBrush x:Key="ColorAcentoSuave" Color="#EDE3F5" />
+    <SolidColorBrush x:Key="ColorBorde"       Color="#C9C2D2" />
+    <SolidColorBrush x:Key="ColorExito"       Color="#2E7D32" />
+    <SolidColorBrush x:Key="ColorError"       Color="#C62828" />
+    <SolidColorBrush x:Key="ColorAviso"       Color="#E6A100" />
+
+    <FontFamily x:Key="Fuente">Segoe UI</FontFamily>
+
+    <!-- Títulos de cada pantalla -->
+    <Style x:Key="Titulo" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Fuente}" />
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{StaticResource ColorTexto}" />
+        <Setter Property="Margin" Value="0,0,0,24" />
+    </Style>
+
+    <!-- Texto común -->
+    <Style x:Key="Texto" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Fuente}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="Foreground" Value="{StaticResource ColorTexto}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!-- Botón común: grande y fácil de tocar con el mouse -->
+    <Style x:Key="Boton" TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource Fuente}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="Padding" Value="16,10" />
+        <Setter Property="MinHeight" Value="40" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Foreground" Value="{StaticResource ColorTexto}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ColorBorde}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <!-- Botón principal de cada pantalla (usar uno solo por pantalla) -->
+    <Style x:Key="BotonPrincipal" TargetType="Button" BasedOn="{StaticResource Boton}">
+        <Setter Property="Background" Value="{StaticResource ColorAcentoSuave}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ColorAcento}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+</ResourceDictionary>

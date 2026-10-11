@@ -1,0 +1,48 @@
+<UserControl x:Class="Auna.Pantallas.PantallaInicio"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Auna">
+    <!-- Pantalla de inicio. Responsable: Agostina. -->
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="¿Qué querés hacer?" Style="{StaticResource Titulo}" />
+
+        <!-- Los botones usan los mismos comandos que el menú y los atajos -->
+        <UniformGrid Grid.Row="1" Columns="3" Height="170">
+            <Button Margin="0,0,10,0" Style="{StaticResource Boton}"
+                    Command="{x:Static local:Comandos.IrSenasTexto}"
+                    AutomationProperties.Name="Señas a texto, con la cámara">
+                <StackPanel>
+                    <TextBlock Text="Señas → Texto" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" />
+                    <TextBlock Text="con la cámara" Foreground="{StaticResource ColorTextoSuave}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Ctrl+1" Margin="0,16,0,0" FontWeight="Bold" Foreground="{StaticResource ColorAcento}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+
+            <Button Margin="5,0,5,0" Style="{StaticResource Boton}"
+                    Command="{x:Static local:Comandos.IrTextoSenas}"
+                    AutomationProperties.Name="Texto a señas, con el personaje">
+                <StackPanel>
+                    <TextBlock Text="Texto → Señas" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" />
+                    <TextBlock Text="con el personaje" Foreground="{StaticResource ColorTextoSuave}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Ctrl+2" Margin="0,16,0,0" FontWeight="Bold" Foreground="{StaticResource ColorAcento}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+
+            <Button Margin="10,0,0,0" Style="{StaticResource Boton}"
+                    Command="{x:Static local:Comandos.IrBiblioteca}"
+                    AutomationProperties.Name="Biblioteca de señas">
+                <StackPanel>
+                    <TextBlock Text="Biblioteca" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" />
+                    <TextBlock Text="buscar señas" Foreground="{StaticResource ColorTextoSuave}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Ctrl+3" Margin="0,16,0,0" FontWeight="Bold" Foreground="{StaticResource ColorAcento}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+        </UniformGrid>
+    </Grid>
+</UserControl>

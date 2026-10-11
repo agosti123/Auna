@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Auna</RootNamespace>
+    <AssemblyName>Auna</AssemblyName>
+  </PropertyGroup>
+
+  <!-- Copia senas.json y las animaciones (GIF) junto al .exe al compilar -->
+  <ItemGroup>
+    <None Update="Recursos\**\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Recursos\**\*.gif" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
