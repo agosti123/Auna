@@ -32,9 +32,9 @@ public partial class MainWindow : Window
         //   [IdPantalla.TextoSenas] = new PantallaTextoSenas(),
         return new Dictionary<IdPantalla, UserControl>
         {
-            [IdPantalla.Inicio]     = new PantallaInicio(),
+            [IdPantalla.Inicio] = new PantallaInicio(),
             [IdPantalla.SenasTexto] = new PantallaEnConstruccion("Señas a texto", "Florencia"),
-            [IdPantalla.TextoSenas] = new PantallaEnConstruccion("Texto a señas", "Tomás"),
+            [IdPantalla.TextoSenas] = new PantallaTextoSenas(),
             [IdPantalla.Biblioteca] = new PantallaEnConstruccion("Biblioteca", "Antonella"),
         };
     }
@@ -61,7 +61,7 @@ public partial class MainWindow : Window
 
     // ----- Manejadores de los comandos (eventos) -----
 
-    private void AlIrInicio(object sender, ExecutedRoutedEventArgs e)     => CambiarA(IdPantalla.Inicio);
+    private void AlIrInicio(object sender, ExecutedRoutedEventArgs e) => CambiarA(IdPantalla.Inicio);
     private void AlIrSenasTexto(object sender, ExecutedRoutedEventArgs e) => CambiarA(IdPantalla.SenasTexto);
     private void AlIrTextoSenas(object sender, ExecutedRoutedEventArgs e) => CambiarA(IdPantalla.TextoSenas);
     private void AlIrBiblioteca(object sender, ExecutedRoutedEventArgs e) => CambiarA(IdPantalla.Biblioteca);
