@@ -33,7 +33,7 @@ public partial class MainWindow : Window
         return new Dictionary<IdPantalla, UserControl>
         {
             [IdPantalla.Inicio]     = new PantallaInicio(),
-            [IdPantalla.SenasTexto] = new PantallaEnConstruccion("Señas a texto", "Florencia"),
+            [IdPantalla.SenasTexto] = new PantallaSenasTexto(),
             [IdPantalla.TextoSenas] = new PantallaEnConstruccion("Texto a señas", "Tomás"),
             [IdPantalla.Biblioteca] = new PantallaEnConstruccion("Biblioteca", "Antonella"),
         };
