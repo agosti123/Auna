@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Threading;
+using Auna.Modelo;
 
 namespace Auna;
 
@@ -15,8 +16,22 @@ public partial class App : Application
 
     private void AlOcurrirErrorNoControlado(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
-        MessageBox.Show($"Ocurrió un error inesperado:\n\n{e.Exception.Message}",
-                        "Auna - Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        e.Handled = true;
+        // Errores propios de Auna: ya traen un mensaje claro para la persona.
+        bool esperado = e.Exception is SenaNoEncontradaException
+                                    or CamaraNoDisponibleException
+                                    or ArchivoInvalidoException;
+
+        if (esperado)
+        {
+            MessageBox.Show(e.Exception.Message, "Auna",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        else
+        {
+            MessageBox.Show($"Ocurrió un error inesperado:\n\n{e.Exception.Message}",
+                            "Auna - Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        e.Handled = true; // la aplicación sigue abierta
     }
 }
