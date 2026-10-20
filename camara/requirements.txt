@@ -1,5 +1,44 @@
-# Librerías para el reconocimiento de señas (sprint C).
-# Instalar con: pip install -r requirements.txt
-opencv-python
-mediapipe
-scikit-learn
+# ============================================================
+# TRADUCTOR DE LENGUA DE SEÑAS ARGENTINA (LSA)
+# Dependencias del reconocimiento de señas
+# Python requerido: 3.12
+# ============================================================
+
+# CONFIGURACION INICIAL (Windows / PowerShell)
+#
+# 1. Instalar Python 3.12 y Git, si todavia no estan instalados.
+#
+# 2. Abrir una terminal en la carpeta raiz del proyecto.
+#
+# 3. Crear el entorno virtual (solo la primera vez):
+#    py -3.12 -m venv .venv
+#
+# 4. Activar el entorno virtual:
+#    .\.venv\Scripts\Activate.ps1
+#
+# 5. Actualizar pip:
+#    python -m pip install --upgrade pip
+#
+# 6. Instalar las dependencias:
+#    python -m pip install -r requirements.txt
+#
+# 7. Comprobar las dependencias:
+#    python -m pip check
+#
+# 8. Ejecutar las pruebas del proyecto.
+#
+# IMPORTANTE:
+# - No subir la carpeta .venv a Git.
+# - Si se abre una terminal nueva, volver a activar .venv.
+# - Python 3.12 debe estar instalado por separado.
+# - Si PowerShell bloquea la activacion, consultar las
+#   instrucciones del proyecto; tambien se puede usar CMD.
+#
+# ============================================================
+# DEPENDENCIAS
+# ============================================================
+
+opencv-contrib-python==5.0.0.93
+mediapipe==0.10.14
+scikit-learn==1.9.1
+Pillow==13.0.0

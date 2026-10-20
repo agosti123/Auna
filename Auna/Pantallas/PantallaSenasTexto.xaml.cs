@@ -44,12 +44,41 @@ public partial class PantallaSenasTexto : UserControl, IPantalla
             return;
         }
 
+        string? carpetaCamara = Path.GetDirectoryName(rutaScript);
+
+        string? raizProyecto = carpetaCamara is null
+            ? null
+            : Directory.GetParent(carpetaCamara)?.FullName;
+
+        string? rutaPython = raizProyecto is null
+            ? null
+            : Path.Combine(
+                raizProyecto,
+                ".venv",
+                "Scripts",
+                "python.exe"
+            );
+
+        if (rutaPython is null || !File.Exists(rutaPython))
+        {
+            MessageBox.Show(
+                "No se encontró el entorno virtual de Python.\n" +
+                "Crealo desde la carpeta raíz con:\n" +
+                "py -3.12 -m venv .venv",
+                "Python no encontrado",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning
+            );
+
+            return;
+        }
+
         try
         {
             var inicio = new ProcessStartInfo
             {
-                FileName = "py",
-                Arguments = $"-3.11 \"{rutaScript}\"",
+                FileName = rutaPython,
+                Arguments = $"\"{rutaScript}\"",
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
