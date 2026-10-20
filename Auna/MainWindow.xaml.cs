@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Auna.Pantallas;
+using Auna.Servicios;
 
 namespace Auna;
 
@@ -18,11 +21,19 @@ public partial class MainWindow : Window
     private readonly Dictionary<IdPantalla, UserControl> _pantallas;
     private IdPantalla _actual;
 
+    // Conexión con el programa de Python de la cámara (tarea B1).
+    private readonly ConexionCamara _camara = new();
+
     public MainWindow()
     {
         InitializeComponent();
         _pantallas = CrearPantallas();
         CambiarA(IdPantalla.Inicio);
+
+        // Nos suscribimos a los eventos de la cámara.
+        _camara.ResultadoRecibido += AlRecibirResultadoCamara;
+        _camara.ErrorOcurrido += AlOcurrirErrorCamara;
+        _camara.Detenida += AlDetenerseCamara;
     }
 
     private static Dictionary<IdPantalla, UserControl> CrearPantallas()
@@ -78,6 +89,40 @@ public partial class MainWindow : Window
 
     private void AlCerrarVentana(object? sender, CancelEventArgs e)
     {
-        // Más adelante (tarea C2): acá también se cierra el programa de la cámara.
+        // Al cerrar la app, cerramos también el programa de la cámara (tarea C2).
+        _camara.Detener();
+    }
+
+    // ----- Cámara (tarea B1) -----
+
+    private void AlProbarCamara(object sender, RoutedEventArgs e)
+    {
+        TextoEstado.Text = "Probando la conexión con la cámara…";
+        _camara.Iniciar();
+    }
+
+    private void AlRecibirResultadoCamara(object? sender, ResultadoReconocimiento resultado)
+    {
+        // Por ahora lo mostramos en la barra de estado. Cuando Flor tenga la
+        // pantalla Señas a texto, ella se suscribe a este mismo evento.
+        if (resultado.EsSeguro)
+        {
+            TextoEstado.Text = $"Cámara: {resultado.Mejor.Palabra.ToUpper()} ({resultado.Mejor.Confianza:P0})";
+        }
+        else
+        {
+            var sugerencias = string.Join(", ", resultado.Opciones.Select(o => o.Palabra));
+            TextoEstado.Text = $"Cámara: no estoy seguro. ¿Es alguna de estas? {sugerencias}";
+        }
+    }
+
+    private void AlOcurrirErrorCamara(object? sender, string mensaje)
+    {
+        MessageBox.Show(this, mensaje, "Auna - Cámara", MessageBoxButton.OK, MessageBoxImage.Warning);
+    }
+
+    private void AlDetenerseCamara(object? sender, EventArgs e)
+    {
+        TextoEstado.Text += "  ·  La cámara se detuvo.";
     }
 }

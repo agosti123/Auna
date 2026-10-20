@@ -15,4 +15,9 @@
     <None Update="Recursos\**\*.gif" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <!-- Copia el programa de la cámara (Python) junto al .exe -->
+  <ItemGroup>
+    <None Include="..\camara\reconocer.py" Link="camara\reconocer.py" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
