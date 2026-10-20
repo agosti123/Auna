@@ -35,7 +35,7 @@ public partial class MainWindow : Window
             [IdPantalla.Inicio] = new PantallaInicio(),
             [IdPantalla.SenasTexto] = new PantallaEnConstruccion("Señas a texto", "Florencia"),
             [IdPantalla.TextoSenas] = new PantallaTextoSenas(),
-            [IdPantalla.Biblioteca] = new PantallaEnConstruccion("Biblioteca", "Antonella"),
+            [IdPantalla.Biblioteca] = new BibliotecaView(),
         };
     }
 
