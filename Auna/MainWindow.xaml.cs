@@ -27,15 +27,12 @@ public partial class MainWindow : Window
 
     private static Dictionary<IdPantalla, UserControl> CrearPantallas()
     {
-        // Cuando cada integrante tenga su pantalla, reemplaza la línea de
-        // PantallaEnConstruccion por su clase. Por ejemplo:
-        //   [IdPantalla.TextoSenas] = new PantallaTextoSenas(),
         return new Dictionary<IdPantalla, UserControl>
         {
-            [IdPantalla.Inicio]     = new PantallaInicio(),
+            [IdPantalla.Inicio] = new PantallaInicio(),
             [IdPantalla.SenasTexto] = new PantallaSenasTexto(),
-            [IdPantalla.TextoSenas] = new PantallaEnConstruccion("Texto a señas", "Tomás"),
-            [IdPantalla.Biblioteca] = new PantallaEnConstruccion("Biblioteca", "Antonella"),
+            [IdPantalla.TextoSenas] = new PantallaTextoSenas(),
+            [IdPantalla.Biblioteca] = new BibliotecaView(),
         };
     }
 
@@ -61,7 +58,7 @@ public partial class MainWindow : Window
 
     // ----- Manejadores de los comandos (eventos) -----
 
-    private void AlIrInicio(object sender, ExecutedRoutedEventArgs e)     => CambiarA(IdPantalla.Inicio);
+    private void AlIrInicio(object sender, ExecutedRoutedEventArgs e) => CambiarA(IdPantalla.Inicio);
     private void AlIrSenasTexto(object sender, ExecutedRoutedEventArgs e) => CambiarA(IdPantalla.SenasTexto);
     private void AlIrTextoSenas(object sender, ExecutedRoutedEventArgs e) => CambiarA(IdPantalla.TextoSenas);
     private void AlIrBiblioteca(object sender, ExecutedRoutedEventArgs e) => CambiarA(IdPantalla.Biblioteca);
