@@ -27,13 +27,10 @@ public partial class MainWindow : Window
 
     private static Dictionary<IdPantalla, UserControl> CrearPantallas()
     {
-        // Cuando cada integrante tenga su pantalla, reemplaza la línea de
-        // PantallaEnConstruccion por su clase. Por ejemplo:
-        //   [IdPantalla.TextoSenas] = new PantallaTextoSenas(),
         return new Dictionary<IdPantalla, UserControl>
         {
             [IdPantalla.Inicio] = new PantallaInicio(),
-            [IdPantalla.SenasTexto] = new PantallaEnConstruccion("Señas a texto", "Florencia"),
+            [IdPantalla.SenasTexto] = new PantallaSenasTexto(),
             [IdPantalla.TextoSenas] = new PantallaTextoSenas(),
             [IdPantalla.Biblioteca] = new BibliotecaView(),
         };
