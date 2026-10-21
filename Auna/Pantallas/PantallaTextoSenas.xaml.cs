@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Speech.Synthesis;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
@@ -12,15 +13,55 @@ public partial class PantallaTextoSenas : UserControl, IPantalla
 {
     private string? _rutaActual;
     private double _velocidad = 1.0;
+    private readonly SpeechSynthesizer _voz = new();
 
     public PantallaTextoSenas()
     {
         InitializeComponent();
+        ElegirVozEnEspanol();
         Loaded += (_, _) => CuadroTexto.Focus();
+        // Si te vas de la pantalla, la voz deja de hablar.
+        Unloaded += (_, _) => _voz.SpeakAsyncCancelAll();
     }
 
     public string Titulo => "Texto → Señas";
     public string TextoEstado => "Escribí una palabra y apretá Enter para ver la seña";
+
+    private void ElegirVozEnEspanol()
+    {
+        try
+        {
+            foreach (var voz in _voz.GetInstalledVoices())
+            {
+                if (voz.Enabled && voz.VoiceInfo.Culture.TwoLetterISOLanguageName == "es")
+                {
+                    _voz.SelectVoice(voz.VoiceInfo.Name);
+                    break;
+                }
+            }
+        }
+        catch (Exception)
+        {
+            // Si no se puede elegir, se usa la voz que traiga Windows por defecto.
+        }
+    }
+
+    private void Escuchar_Click(object sender, RoutedEventArgs e)
+    {
+        string texto = CuadroTexto.Text.Trim();
+        if (texto.Length == 0) return;
+
+        try
+        {
+            _voz.SpeakAsyncCancelAll();
+            _voz.SpeakAsync(texto);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"No pude reproducir la voz: {ex.Message}", "Auna",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
 
     private void Mostrar_Click(object sender, RoutedEventArgs e)
     {

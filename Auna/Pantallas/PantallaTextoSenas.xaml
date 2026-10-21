@@ -16,6 +16,11 @@
             <Button DockPanel.Dock="Right" Content="Mostrar" IsDefault="True"
                     Style="{StaticResource BotonPrincipal}" Margin="10,0,0,0"
                     Click="Mostrar_Click"/>
+            <Button DockPanel.Dock="Right" Content="Escuchar"
+                    Style="{StaticResource Boton}" Margin="10,0,0,0"
+                    ToolTip="Lee la palabra en voz alta"
+                    AutomationProperties.Name="Escuchar la palabra en voz alta"
+                    Click="Escuchar_Click"/>
             <TextBox x:Name="CuadroTexto" FontSize="18" Padding="8"
                      AutomationProperties.Name="Palabra a traducir"/>
         </DockPanel>
@@ -36,3 +41,4 @@
         </StackPanel>
     </Grid>
 </UserControl>
+    
