@@ -11,4 +11,13 @@ public interface IPantalla
 
     /// <summary>Se muestra en la barra de estado (por ejemplo, los atajos disponibles).</summary>
     string TextoEstado { get; }
+
+    /// <summary>
+    /// Se llama cuando la pantalla aparece. Por defecto no hace nada;
+    /// una pantalla lo usa si necesita arrancar algo (por ejemplo, la cámara).
+    /// </summary>
+    void AlMostrar() { }
+
+    /// <summary>Se llama cuando se deja la pantalla (para detener lo que haya arrancado).</summary>
+    void AlOcultar() { }
 }
