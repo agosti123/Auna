@@ -36,8 +36,8 @@
                     Margin="0,0,10,0" Click="Pausa_Click"/>
             <Button Content="Repetir" Style="{StaticResource Boton}"
                     Margin="0,0,10,0" Click="Repetir_Click"/>
-            <Button Content="Más lento" Style="{StaticResource Boton}"
-                    Click="MasLento_Click"/>
+            <Button x:Name="BotonVelocidad" Content="Velocidad: Normal" Style="{StaticResource Boton}"
+                    Click="CambiarVelocidad_Click"/>
         </StackPanel>
     </Grid>
 </UserControl>
