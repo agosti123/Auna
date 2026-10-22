@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.IO;
+using Auna.Servicios;
 
 namespace Auna.Pantallas
 {
@@ -17,6 +19,8 @@ namespace Auna.Pantallas
     {
         public string Titulo => "Biblioteca";
         public string TextoEstado => "Doble clic en una palabra para ver la seña";
+        
+        private readonly ReproductorGif _reproductor;
 
         private readonly List<Sena> senas = new()
         {
@@ -32,6 +36,8 @@ namespace Auna.Pantallas
         {
             InitializeComponent();
 
+            _reproductor = new ReproductorGif(imgSena);
+
             var categorias = new List<string> { "Todas" };
             categorias.AddRange(senas.Select(s => s.Categoria).Distinct());
             cmbCategoria.ItemsSource = categorias;
@@ -40,10 +46,69 @@ namespace Auna.Pantallas
             cmbCategoria.SelectionChanged += (s, e) => ActualizarLista();
             txtBuscar.TextChanged += (s, e) => ActualizarLista();
             lstPalabras.SelectionChanged += (s, e) =>
-                txtNombreSena.Text = (lstPalabras.SelectedItem as Sena)?.Palabra ?? "";
+            {
+                _reproductor.Detener();
+
+                txtNombreSena.Text =
+                    (lstPalabras.SelectedItem as Sena)?.Palabra ?? "";
+            };
+
+            Unloaded += (_, _) => _reproductor.Detener();
 
             ActualizarLista();
         }
+
+
+        private void btnReproducir_Click(object sender, RoutedEventArgs e)
+        {
+            if (lstPalabras.SelectedItem is not Sena sena)
+            {
+                MessageBox.Show(
+                    "Seleccioná una palabra para ver su seña.",
+                    "Biblioteca",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                return;
+            }
+
+            string palabra = sena.Palabra.Trim().ToLowerInvariant();
+
+            string ruta = Path.Combine(
+                AppContext.BaseDirectory,
+                "Recursos",
+                "animaciones",
+                palabra + ".gif");
+
+            if (!File.Exists(ruta))
+            {
+                _reproductor.Detener();
+
+                MessageBox.Show(
+                    $"Todavía no tengo la seña de \"{sena.Palabra}\".",
+                    "Biblioteca",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                return;
+            }
+
+            try
+            {
+                _reproductor.Cargar(ruta);
+            }
+            catch (Exception ex)
+            {
+                _reproductor.Detener();
+
+                MessageBox.Show(
+                    $"No se pudo reproducir la seña: {ex.Message}",
+                    "Biblioteca",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+        }
+
 
         private void ActualizarLista()
         {
