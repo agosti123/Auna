@@ -1,159 +1,126 @@
-﻿
 using System;
-using System.Diagnostics;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using Auna.Servicios;
 
 namespace Auna.Pantallas;
 
+/// <summary>
+/// Pantalla Señas a texto. Diseño: Florencia (A3).
+/// Conexión con la cámara: Agostina (C2), usando ConexionCamara (B1).
+/// </summary>
 public partial class PantallaSenasTexto : UserControl, IPantalla
 {
-    private Process? procesoCamara;
+    private readonly ConexionCamara _camara;
 
-    public PantallaSenasTexto()
+    public PantallaSenasTexto(ConexionCamara camara)
     {
         InitializeComponent();
+
+        _camara = camara;
+        _camara.ResultadoRecibido += AlRecibirResultado;
+        _camara.ErrorOcurrido += AlOcurrirError;
+        _camara.Detenida += AlDetenerseCamara;
     }
 
     public string Titulo => "Señas a texto";
 
-    public string TextoEstado =>
-        "Modo Señas a Texto · Cámara pendiente de conexión";
+    public string TextoEstado => "Hacé una seña frente a la cámara · Esc para volver al inicio";
 
+    // ----- Cuándo se abre y se cierra la cámara -----
+
+    /// <summary>Al entrar a esta pantalla, la cámara se abre sola.</summary>
+    public void AlMostrar() => AbrirCamara();
+
+    /// <summary>Al salir de esta pantalla, la cámara se cierra.</summary>
+    public void AlOcultar()
+    {
+        _camara.Detener();
+        TextoEstadoCamara.Text = "Cámara cerrada";
+    }
+
+    private void AbrirCamara()
+    {
+        TextoMensaje.Text = "";
+        _camara.Iniciar();
+
+        if (_camara.EstaActiva)
+        {
+            TextoEstadoCamara.Text = "Detectando… Hacé una seña frente a la cámara.";
+            BotonAbrirCamara.Content = "Reiniciar cámara";
+        }
+    }
+
+    // El botón queda por si la cámara se cerró y la persona quiere volver a abrirla.
     private void AlAbrirCamara(object sender, RoutedEventArgs e)
     {
-        // Evitamos abrir dos ventanas de cámara al mismo tiempo.
-        if (procesoCamara is { HasExited: false })
-        {
-            TextoEstadoCamara.Text = "La ventana de cámara ya está abierta.";
-            return;
-        }
-
-        string? rutaScript = BuscarScriptCamara();
-
-        if (rutaScript is null)
-        {
-            MessageBox.Show(
-                "No se encontró camara/ventana_camara.py.\n" +
-                "Verificá que el archivo exista dentro de la carpeta camara.",
-                "No se encontró la cámara",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
-
-            return;
-        }
-
-        string? carpetaCamara = Path.GetDirectoryName(rutaScript);
-
-        string? raizProyecto = carpetaCamara is null
-            ? null
-            : Directory.GetParent(carpetaCamara)?.FullName;
-
-        string? rutaPython = raizProyecto is null
-            ? null
-            : Path.Combine(
-                raizProyecto,
-                ".venv",
-                "Scripts",
-                "python.exe"
-            );
-
-        if (rutaPython is null || !File.Exists(rutaPython))
-        {
-            MessageBox.Show(
-                "No se encontró el entorno virtual de Python.\n" +
-                "Crealo desde la carpeta raíz con:\n" +
-                "py -3.12 -m venv .venv",
-                "Python no encontrado",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning
-            );
-
-            return;
-        }
-
-        try
-        {
-            var inicio = new ProcessStartInfo
-            {
-                FileName = rutaPython,
-                Arguments = $"\"{rutaScript}\"",
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            procesoCamara = new Process
-            {
-                StartInfo = inicio,
-                EnableRaisingEvents = true
-            };
-
-            procesoCamara.Exited += (_, _) =>
-            {
-                // Actualizamos la interfaz sin bloquear el hilo
-                // que detecta que Python terminó.
-                Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    TextoEstadoCamara.Text = "Cámara cerrada.";
-                    procesoCamara?.Dispose();
-                    procesoCamara = null;
-                }));
-            };
-
-            if (procesoCamara.Start())
-            {
-                TextoEstadoCamara.Text = "Ventana de cámara abierta.";
-            }
-            else
-            {
-                TextoEstadoCamara.Text = "No se pudo abrir la cámara.";
-            }
-        }
-        catch (Exception ex)
-        {
-            procesoCamara?.Dispose();
-            procesoCamara = null;
-
-            TextoEstadoCamara.Text = "Error al abrir la cámara.";
-
-            MessageBox.Show(
-                "No se pudo iniciar Python.\n\n" + ex.Message,
-                "Error",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
-        }
+        _camara.Detener();
+        AbrirCamara();
     }
 
-    private static string? BuscarScriptCamara()
+    // ----- Eventos que llegan de la cámara -----
+
+    private void AlRecibirResultado(object? sender, ResultadoReconocimiento resultado)
     {
-        DirectoryInfo? carpeta = new(AppContext.BaseDirectory);
+        PanelSugerencias.Children.Clear();
+        TextoMensaje.Text = "";
 
-        while (carpeta is not null)
+        if (resultado.EsSeguro)
         {
-            string ruta = Path.Combine(
-                carpeta.FullName,
-                "camara",
-                "ventana_camara.py");
-
-            if (File.Exists(ruta))
-                return ruta;
-
-            carpeta = carpeta.Parent;
+            // La cámara está segura: mostramos la palabra en grande.
+            TextoResultado.Text = resultado.Mejor.Palabra.ToUpper();
+            TextoSugerencias.Text = $"Seguridad: {resultado.Mejor.Confianza:P0}";
         }
+        else
+        {
+            // No está segura: no mostramos algo que podría estar mal,
+            // ofrecemos las opciones para que la persona elija.
+            TextoResultado.Text = "No estoy seguro";
+            TextoSugerencias.Text = "Tocá la palabra correcta o repetí la seña:";
 
-        return null;
+            foreach (var opcion in resultado.Opciones)
+            {
+                var boton = new Button
+                {
+                    Content = opcion.Palabra,
+                    Style = (Style)FindResource("Boton"),
+                    Margin = new Thickness(0, 0, 8, 8),
+                };
+                boton.Click += (_, _) => ElegirSugerencia(opcion.Palabra);
+                PanelSugerencias.Children.Add(boton);
+            }
+        }
     }
+
+    private void ElegirSugerencia(string palabra)
+    {
+        TextoResultado.Text = palabra.ToUpper();
+        TextoSugerencias.Text = "Elegida por la persona.";
+        PanelSugerencias.Children.Clear();
+    }
+
+    private void AlOcurrirError(object? sender, string mensaje)
+    {
+        // Mostramos el problema en la pantalla, sin cerrar la app.
+        TextoEstadoCamara.Text = mensaje;
+        BotonAbrirCamara.Content = "Volver a intentar";
+    }
+
+    private void AlDetenerseCamara(object? sender, EventArgs e)
+    {
+        TextoEstadoCamara.Text = "La cámara se detuvo. Tocá «Reiniciar cámara» para volver a empezar.";
+    }
+
+    // ----- Botones de abajo -----
 
     private void AlNoEntender(object sender, RoutedEventArgs e)
     {
-        TextoMensaje.Text =
-            "No se entendió la seña. Intentá hacerla nuevamente.";
+        TextoMensaje.Text = "No se entendió la seña. Intentá hacerla nuevamente.";
     }
 
     private void AlEscuchar(object sender, RoutedEventArgs e)
     {
-        TextoMensaje.Text =
-            "La reproducción de audio todavía no está implementada.";
+        // Tarea B5 (Tomás): leer la palabra en voz alta.
+        TextoMensaje.Text = "La reproducción de audio todavía no está implementada.";
     }
 }

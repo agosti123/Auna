@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -29,19 +28,15 @@ public partial class MainWindow : Window
         InitializeComponent();
         _pantallas = CrearPantallas();
         CambiarA(IdPantalla.Inicio);
-
-        // Nos suscribimos a los eventos de la cámara.
-        _camara.ResultadoRecibido += AlRecibirResultadoCamara;
-        _camara.ErrorOcurrido += AlOcurrirErrorCamara;
-        _camara.Detenida += AlDetenerseCamara;
     }
 
-    private static Dictionary<IdPantalla, UserControl> CrearPantallas()
+    private Dictionary<IdPantalla, UserControl> CrearPantallas()
     {
         return new Dictionary<IdPantalla, UserControl>
         {
             [IdPantalla.Inicio] = new PantallaInicio(),
-            [IdPantalla.SenasTexto] = new PantallaSenasTexto(),
+            // La pantalla de Señas a texto recibe la conexión con la cámara (tarea C2).
+            [IdPantalla.SenasTexto] = new PantallaSenasTexto(_camara),
             [IdPantalla.TextoSenas] = new PantallaTextoSenas(),
             [IdPantalla.Biblioteca] = new BibliotecaView(),
         };
@@ -51,6 +46,10 @@ public partial class MainWindow : Window
     {
         if (!_pantallas.TryGetValue(destino, out var pantalla)) return;
 
+        // Avisamos a la pantalla que se va (por ejemplo, para que cierre la cámara).
+        if (Contenido.Content is IPantalla anterior && !ReferenceEquals(anterior, pantalla))
+            anterior.AlOcultar();
+
         _actual = destino;
         Contenido.Content = pantalla;
 
@@ -59,6 +58,9 @@ public partial class MainWindow : Window
         {
             Title = $"Auna - {info.Titulo}";
             TextoEstado.Text = info.TextoEstado;
+
+            // Avisamos a la pantalla que aparece (por ejemplo, para que abra la cámara).
+            info.AlMostrar();
         }
 
         // Ponemos el foco en el primer control para poder usar el teclado enseguida.
@@ -88,38 +90,5 @@ public partial class MainWindow : Window
     {
         // Al cerrar la app, cerramos también el programa de la cámara (tarea C2).
         _camara.Detener();
-    }
-
-    // ----- Cámara (tarea B1) -----
-
-    private void AlProbarCamara(object sender, RoutedEventArgs e)
-    {
-        TextoEstado.Text = "Probando la conexión con la cámara…";
-        _camara.Iniciar();
-    }
-
-    private void AlRecibirResultadoCamara(object? sender, ResultadoReconocimiento resultado)
-    {
-        // Por ahora lo mostramos en la barra de estado. Cuando Flor tenga la
-        // pantalla Señas a texto, ella se suscribe a este mismo evento.
-        if (resultado.EsSeguro)
-        {
-            TextoEstado.Text = $"Cámara: {resultado.Mejor.Palabra.ToUpper()} ({resultado.Mejor.Confianza:P0})";
-        }
-        else
-        {
-            var sugerencias = string.Join(", ", resultado.Opciones.Select(o => o.Palabra));
-            TextoEstado.Text = $"Cámara: no estoy seguro. ¿Es alguna de estas? {sugerencias}";
-        }
-    }
-
-    private void AlOcurrirErrorCamara(object? sender, string mensaje)
-    {
-        MessageBox.Show(this, mensaje, "Auna - Cámara", MessageBoxButton.OK, MessageBoxImage.Warning);
-    }
-
-    private void AlDetenerseCamara(object? sender, EventArgs e)
-    {
-        TextoEstado.Text += "  ·  La cámara se detuvo.";
     }
 }

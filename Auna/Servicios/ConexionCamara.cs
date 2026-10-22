@@ -19,8 +19,12 @@ public class ConexionCamara : IDisposable
     private readonly SynchronizationContext? _contextoInterfaz = SynchronizationContext.Current;
     private Process? _python;
 
-    /// <summary>Comando para ejecutar Python. En algunas computadoras es "py".</summary>
-    public string EjecutablePython { get; set; } = "python";
+    /// <summary>
+    /// Python que se usa. Si existe el entorno virtual del proyecto (.venv, en la
+    /// carpeta raíz del repositorio), usamos ese, que tiene MediaPipe y las demás
+    /// librerías instaladas. Si no, probamos con el "python" del sistema.
+    /// </summary>
+    public string EjecutablePython { get; set; } = BuscarPythonDelProyecto() ?? "python";
 
     /// <summary>Ruta del programa de la cámara (se copia junto al .exe al compilar).</summary>
     public string RutaScript { get; set; } =
@@ -72,7 +76,8 @@ public class ConexionCamara : IDisposable
         {
             _python.Dispose();
             _python = null;
-            AvisarError("No se pudo abrir Python. Revisá que esté instalado y que el comando \"python\" funcione.");
+            AvisarError("No se pudo abrir Python. Creá el entorno virtual desde la carpeta raíz del " +
+                        "proyecto con: py -3.12 -m venv .venv (ver camara/requirements.txt).");
         }
     }
 
@@ -92,6 +97,22 @@ public class ConexionCamara : IDisposable
     }
 
     public void Dispose() => Detener();
+
+    /// <summary>
+    /// Busca .venv\Scripts\python.exe subiendo desde la carpeta del .exe
+    /// hasta encontrar la raíz del repositorio. Devuelve null si no existe.
+    /// </summary>
+    private static string? BuscarPythonDelProyecto()
+    {
+        var carpeta = new DirectoryInfo(AppContext.BaseDirectory);
+        while (carpeta != null)
+        {
+            string ruta = Path.Combine(carpeta.FullName, ".venv", "Scripts", "python.exe");
+            if (File.Exists(ruta)) return ruta;
+            carpeta = carpeta.Parent;
+        }
+        return null;
+    }
 
     // ----- Manejadores internos -----
 

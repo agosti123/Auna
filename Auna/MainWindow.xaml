@@ -31,9 +31,6 @@
             </MenuItem>
             <MenuItem Header="A_yuda">
                 <MenuItem Command="{x:Static local:Comandos.AcercaDe}" />
-                <Separator />
-                <!-- Prueba de la tarea B1: se puede quitar cuando la pantalla de Flor use la cámara -->
-                <MenuItem Header="Probar conexión con la cámara" Click="AlProbarCamara" />
             </MenuItem>
         </Menu>
 
