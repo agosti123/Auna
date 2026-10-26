@@ -3,25 +3,29 @@ using System.IO;
 using System.Speech.Synthesis;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using WpfAnimatedGif;
+using Auna.Servicios;
 
 namespace Auna.Pantallas;
 
 public partial class PantallaTextoSenas : UserControl, IPantalla
 {
     private string? _rutaActual;
-    private double _velocidad = 1.0;
     private readonly SpeechSynthesizer _voz = new();
+    private readonly ReproductorGif _reproductor;
+    private int _nivelVelocidad = 0;
 
     public PantallaTextoSenas()
     {
         InitializeComponent();
+        _reproductor = new ReproductorGif(Personaje);
         ElegirVozEnEspanol();
         Loaded += (_, _) => CuadroTexto.Focus();
         // Si te vas de la pantalla, la voz deja de hablar.
-        Unloaded += (_, _) => _voz.SpeakAsyncCancelAll();
+        Unloaded += (_, _) =>
+        {
+            _voz.SpeakAsyncCancelAll();
+            _reproductor.Detener();
+        };
     }
 
     public string Titulo => "Texto → Señas";
@@ -82,45 +86,65 @@ public partial class PantallaTextoSenas : UserControl, IPantalla
 
     private void Reproducir(string ruta)
     {
-        _rutaActual = ruta;
+        try
+        {
+            _reproductor.Cargar(ruta);
+            _rutaActual = ruta;
+            BotonPausa.Content = "Pausa";
+            _nivelVelocidad = 0;
+            BotonVelocidad.Content = "Velocidad: Normal";
+        }
+        catch (Exception ex)
+        {
+            _reproductor.Detener();
+            _rutaActual = null;
 
-        var imagen = new BitmapImage();
-        imagen.BeginInit();
-        imagen.UriSource = new Uri(ruta);
-        imagen.CacheOption = BitmapCacheOption.OnLoad;
-        imagen.EndInit();
-
-        ImageBehavior.SetRepeatBehavior(Personaje, new RepeatBehavior(1));
-        ImageBehavior.SetAnimationSpeedRatio(Personaje, _velocidad);
-        ImageBehavior.SetAnimatedSource(Personaje, imagen);
-        BotonPausa.Content = "Pausa";
+            MessageBox.Show(
+                $"No se pudo reproducir la animación: {ex.Message}",
+                "Auna",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+        }
     }
 
     private void Pausa_Click(object sender, RoutedEventArgs e)
     {
-        var control = ImageBehavior.GetAnimationController(Personaje);
-        if (control == null) return;
+        _reproductor.PausarOReanudar();
 
-        if (control.IsPaused)
-        {
-            control.Play();
-            BotonPausa.Content = "Pausa";
-        }
-        else
-        {
-            control.Pause();
-            BotonPausa.Content = "Reanudar";
-        }
+        BotonPausa.Content = _reproductor.EstaPausado
+            ? "Reanudar"
+            : "Pausa";
     }
 
     private void Repetir_Click(object sender, RoutedEventArgs e)
     {
-        if (_rutaActual != null) Reproducir(_rutaActual);
+        if (_rutaActual != null)
+        {
+            _reproductor.Repetir();
+            BotonPausa.Content = "Pausa";
+        }
     }
 
-    private void MasLento_Click(object sender, RoutedEventArgs e)
+    private void CambiarVelocidad_Click(object sender, RoutedEventArgs e)
     {
-        _velocidad = _velocidad > 0.25 ? _velocidad - 0.25 : 1.0;
-        ImageBehavior.SetAnimationSpeedRatio(Personaje, _velocidad);
+        _nivelVelocidad = (_nivelVelocidad + 1) % 3;
+
+        switch (_nivelVelocidad)
+        {
+            case 0:
+                _reproductor.VelocidadNormal();
+                BotonVelocidad.Content = "Velocidad: Normal";
+                break;
+
+            case 1:
+                _reproductor.VelocidadLenta();
+                BotonVelocidad.Content = "Velocidad: Lenta";
+                break;
+
+            case 2:
+                _reproductor.VelocidadMuyLenta();
+                BotonVelocidad.Content = "Velocidad: Muy lenta";
+                break;
+        }
     }
 }

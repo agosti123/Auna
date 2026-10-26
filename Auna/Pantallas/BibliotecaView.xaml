@@ -35,7 +35,7 @@
                            HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Margin="8"/>
                 </Grid>
             </Border>
-            <Button x:Name="btnReproducir" Content="▶ Reproducir" FontSize="16" Padding="8"/>
+            <Button x:Name="btnReproducir" Content="▶ Reproducir" FontSize="16" Padding="8" Click="btnReproducir_Click"/>
         </StackPanel>
     </Grid>
 </UserControl>
