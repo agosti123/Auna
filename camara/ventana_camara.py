@@ -19,6 +19,8 @@ class VentanaCamara:
         self.imagen_tk = None
         self.after_id = None
 
+        self.cantidad_manos_anterior = 0
+
         self.mp_hands = mp.solutions.hands
         self.mp_drawing = mp.solutions.drawing_utils
 
@@ -84,6 +86,27 @@ class VentanaCamara:
             )
             self.estado.config(text="Detección detenida")
 
+    def extraer_puntos(self, imagen):
+        imagen_rgb = cv2.cvtColor(imagen, cv2.COLOR_BGR2RGB)
+
+        # Guardamos los resultados para poder dibujar las manos.
+        self.resultados_manos = self.detector.process(imagen_rgb)
+
+        if not self.resultados_manos.multi_hand_landmarks:
+            return None
+
+        manos = []
+
+        # Recorremos todas las manos detectadas.
+        for mano in self.resultados_manos.multi_hand_landmarks:
+            puntos = []
+
+            for punto in mano.landmark:
+                puntos.extend([punto.x, punto.y, punto.z])
+
+            manos.append(puntos)
+
+        return manos
     
     def actualizar_video(self):
         self.after_id = None
@@ -98,14 +121,19 @@ class VentanaCamara:
                 imagen = cv2.flip(imagen, 1)
 
                 if self.deteccion_activa:
-                    imagen_rgb = cv2.cvtColor(
-                        imagen, cv2.COLOR_BGR2RGB
-                    )
+                    puntos = self.extraer_puntos(imagen)
 
-                    resultados = self.detector.process(imagen_rgb)
+                    cantidad_manos = len(puntos) if puntos is not None else 0
 
-                    if resultados.multi_hand_landmarks:
-                        for mano in resultados.multi_hand_landmarks:
+                    if puntos is not None:
+                        print(f"Manos detectadas: {len(puntos)}", flush=True)
+
+                        for i, puntos_mano in enumerate(puntos):
+                            print(f"Mano {i + 1}: {puntos_mano}", flush=True)
+
+                    # Dibujamos todas las manos detectadas.
+                    if self.resultados_manos.multi_hand_landmarks:
+                        for mano in self.resultados_manos.multi_hand_landmarks:
                             self.mp_drawing.draw_landmarks(
                                 imagen,
                                 mano,
@@ -132,9 +160,6 @@ class VentanaCamara:
                     15, self.actualizar_video
                 )
 
-
-    
-    
     def cerrar(self):
         if self.cerrando:
             return
