@@ -25,3 +25,6 @@ Thumbs.db
 
 .venv/
 camara/modelo.pkl
+
+# Videos de señas (pesan mucho; solo se suben los CSV con los puntos)
+camara/videos/

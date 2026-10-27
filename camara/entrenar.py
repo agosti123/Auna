@@ -49,7 +49,8 @@ def cargar_ejemplos():
 
     puntos, senas, personas = [], [], []
     for archivo in archivos:
-        persona = archivo.stem.replace("ejemplos_", "")
+        # "ejemplos_agostina.csv" y "ejemplos_agostina-videos.csv" son la misma persona.
+        persona = archivo.stem.replace("ejemplos_", "").split("-")[0]
         with open(archivo, newline="", encoding="utf-8") as f:
             lector = csv.reader(f)
             next(lector, None)  # se salta el encabezado
