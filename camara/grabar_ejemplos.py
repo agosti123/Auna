@@ -5,25 +5,28 @@ from pathlib import Path
 import cv2
 import mediapipe as mp
 
+from puntos_mano import NOMBRES_COLUMNAS, extraer_puntos
+
 CARPETA = Path(__file__).parent
-
-
-def normalizar(puntos):
-    """Pasa los 21 puntos a valores que no dependen de dónde está la mano
-    ni de qué tan cerca está de la cámara."""
-    base = puntos[0]  # la muñeca es el origen
-    coords = [(p.x - base.x, p.y - base.y, p.z - base.z) for p in puntos]
-    escala = max(max(abs(valor) for valor in punto) for punto in coords) or 1.0
-    return [round(valor / escala, 5) for punto in coords for valor in punto]
+ENCABEZADO = ["etiqueta"] + NOMBRES_COLUMNAS
 
 
 def abrir_csv(ruta):
+    """Abre el CSV de la persona para seguir agregando ejemplos.
+    Devuelve (None, None) si el archivo es del formato viejo (una sola mano)."""
     ruta.parent.mkdir(exist_ok=True)
+
+    if ruta.exists():
+        with open(ruta, newline="", encoding="utf-8") as f:
+            encabezado_actual = next(csv.reader(f), None)
+        if encabezado_actual != ENCABEZADO:
+            return None, None
+
     nuevo = not ruta.exists()
     archivo = open(ruta, "a", newline="", encoding="utf-8")
     escritor = csv.writer(archivo)
     if nuevo:
-        escritor.writerow(["etiqueta"] + [f"{eje}{i}" for i in range(21) for eje in "xyz"])
+        escritor.writerow(ENCABEZADO)
     return archivo, escritor
 
 
@@ -45,12 +48,17 @@ def main():
         return
 
     archivo, escritor = abrir_csv(salida)
+    if archivo is None:
+        camara.release()
+        print(f"Error: {salida} es del formato viejo (una sola mano).")
+        print("Borralo o cambiale el nombre y volvé a grabar: ahora se graban las dos manos.")
+        return
     grabando = False
     muestras = 0
 
     with mp_hands.Hands(
         static_image_mode=False,
-        max_num_hands=1,
+        max_num_hands=2,
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5,
     ) as detector:
@@ -63,16 +71,17 @@ def main():
             imagen = cv2.flip(imagen, 1)  # espejo, igual que ventana_camara.py
             resultados = detector.process(cv2.cvtColor(imagen, cv2.COLOR_BGR2RGB))
 
-            mano = None
-            if resultados.multi_hand_landmarks:
-                mano = resultados.multi_hand_landmarks[0]
+            manos = resultados.multi_hand_landmarks or []
+            for mano in manos:
                 mp_drawing.draw_landmarks(imagen, mano, mp_hands.HAND_CONNECTIONS)
-                if grabando:
-                    escritor.writerow([etiqueta] + normalizar(mano.landmark))
-                    muestras += 1
+
+            puntos = extraer_puntos(resultados)  # 126 números (izquierda + derecha) o None
+            if grabando and puntos is not None:
+                escritor.writerow([etiqueta] + puntos)
+                muestras += 1
 
             estado = "GRABANDO" if grabando else "en pausa"
-            deteccion = "mano detectada" if mano else "no veo la mano"
+            deteccion = f"manos: {len(manos)}" if manos else "no veo la mano"
             cv2.putText(imagen, f"Sena: {etiqueta} | Muestras: {muestras} | {estado} | {deteccion}",
                         (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
             cv2.putText(imagen, "ESPACIO: grabar/pausar   Q: salir",

@@ -24,11 +24,17 @@ public class ConexionCamara : IDisposable
     /// carpeta raíz del repositorio), usamos ese, que tiene MediaPipe y las demás
     /// librerías instaladas. Si no, probamos con el "python" del sistema.
     /// </summary>
-    public string EjecutablePython { get; set; } = BuscarPythonDelProyecto() ?? "python";
+    public string EjecutablePython { get; set; } =
+        BuscarEnElProyecto(".venv", "Scripts", "python.exe") ?? "python";
 
-    /// <summary>Ruta del programa de la cámara (se copia junto al .exe al compilar).</summary>
+    /// <summary>
+    /// Programa de la cámara. Usamos el de la carpeta camara del repositorio, porque
+    /// ahí están también los archivos que necesita (ventana_camara.py, reconocedor.py,
+    /// grabar_ejemplos.py y modelo.pkl). Si no lo encuentra, usa la copia junto al .exe.
+    /// </summary>
     public string RutaScript { get; set; } =
-        Path.Combine(AppContext.BaseDirectory, "camara", "reconocer.py");
+        BuscarEnElProyecto("camara", "reconocer.py")
+        ?? Path.Combine(AppContext.BaseDirectory, "camara", "reconocer.py");
 
     public bool EstaActiva => _python is { HasExited: false };
 
@@ -99,15 +105,16 @@ public class ConexionCamara : IDisposable
     public void Dispose() => Detener();
 
     /// <summary>
-    /// Busca .venv\Scripts\python.exe subiendo desde la carpeta del .exe
-    /// hasta encontrar la raíz del repositorio. Devuelve null si no existe.
+    /// Busca un archivo de la carpeta raíz del repositorio (por ejemplo
+    /// .venv\Scripts\python.exe o camara\reconocer.py) subiendo desde la carpeta
+    /// del .exe. Devuelve null si no lo encuentra.
     /// </summary>
-    private static string? BuscarPythonDelProyecto()
+    private static string? BuscarEnElProyecto(params string[] partes)
     {
         var carpeta = new DirectoryInfo(AppContext.BaseDirectory);
         while (carpeta != null)
         {
-            string ruta = Path.Combine(carpeta.FullName, ".venv", "Scripts", "python.exe");
+            string ruta = Path.Combine(carpeta.FullName, Path.Combine(partes));
             if (File.Exists(ruta)) return ruta;
             carpeta = carpeta.Parent;
         }

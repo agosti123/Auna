@@ -14,6 +14,8 @@ import joblib
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 
+from puntos_mano import CANTIDAD_NUMEROS
+
 # Las señas del proyecto (sprint D).
 PALABRAS = [
     "hola", "chau", "gracias",
@@ -21,9 +23,6 @@ PALABRAS = [
     "ayuda", "por favor", "perdón",
     "remedio", "dolor", "receta",
 ]
-
-# 21 puntos de la mano, cada uno con x, y, z.
-CANTIDAD_NUMEROS = 21 * 3
 
 RUTA_MODELO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "modelo.pkl")
 
@@ -33,7 +32,7 @@ FORMAS = {palabra: _generador.uniform(-1, 1, CANTIDAD_NUMEROS) for palabra in PA
 
 
 def puntos_inventados(palabra, ruido=0.15):
-    """Devuelve los 63 números de una mano haciendo esa seña, con un poco de ruido."""
+    """Devuelve los 126 números (dos manos) de alguien haciendo esa seña, con un poco de ruido."""
     return FORMAS[palabra] + np.random.normal(0, ruido, CANTIDAD_NUMEROS)
 
 

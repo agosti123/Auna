@@ -46,7 +46,7 @@ public partial class PantallaSenasTexto : UserControl, IPantalla
 
         if (_camara.EstaActiva)
         {
-            TextoEstadoCamara.Text = "Detectando… Hacé una seña frente a la cámara.";
+            TextoEstadoCamara.Text = "Se abrió la ventana de la cámara: tocá «Iniciar detección», hacé la seña y tocá «Detener detección».";
             BotonAbrirCamara.Content = "Reiniciar cámara";
         }
     }

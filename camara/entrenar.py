@@ -19,11 +19,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 
+from puntos_mano import CANTIDAD_NUMEROS
+
 CARPETA = Path(__file__).parent
 DATOS = CARPETA / "datos"
 MODELO = CARPETA / "modelo.pkl"
 
-COLUMNAS = 1 + 21 * 3  # etiqueta + (x, y, z) de los 21 puntos de la mano
+COLUMNAS = 1 + CANTIDAD_NUMEROS  # etiqueta + 126 números (mano izquierda + mano derecha)
 MINIMO_POR_SENA = 20   # con menos ejemplos que esto, el resultado no es confiable
 
 
@@ -136,7 +138,7 @@ def evaluar_por_persona(X, y, personas):
 def top3(modelo, puntos_normalizados):
     """Devuelve las 3 señas más probables en el formato que lee la app:
         palabra:confianza,palabra:confianza,palabra:confianza
-    'puntos_normalizados' son los 63 números que da normalizar() de grabar_ejemplos.py."""
+    'puntos_normalizados' son los 126 números que da extraer_puntos() de puntos_mano.py."""
     probabilidades = modelo.predict_proba([puntos_normalizados])[0]
     mejores = np.argsort(probabilidades)[::-1][:3]
     return ",".join(f"{modelo.classes_[i]}:{probabilidades[i]:.2f}" for i in mejores)
