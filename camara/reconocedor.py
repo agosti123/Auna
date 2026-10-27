@@ -15,8 +15,8 @@ Cómo se usa desde la ventana de la cámara:
     reconocedor.enviar_a_la_app(self.cuadros)
 
 Donde self.cuadros es una lista con los puntos de cada cuadro de video
-(lo que devuelve extraer_puntos(imagen): una lista de 63 números, o None si
-en ese cuadro no había mano).
+(lo que devuelve extraer_puntos() de puntos_mano.py: 126 números, mano
+izquierda + mano derecha, o None si en ese cuadro no había ninguna mano).
 
 Formato del mensaje que recibe la app (tarea B1):
     hola:0.91,gracias:0.05,ayuda:0.02
@@ -53,7 +53,7 @@ class Reconocedor:
         # "perdón" o "sí" le llegarían con letras raras.
         sys.stdout.reconfigure(encoding="utf-8")
 
-        # Cuántos números espera el modelo por cada cuadro (63 = 21 puntos x 3).
+        # Cuántos números espera el modelo por cada cuadro (126 = 2 manos x 21 puntos x 3).
         self.cantidad_numeros = self.modelo.n_features_in_
 
     def reconocer(self, cuadros):
