@@ -25,7 +25,8 @@
                      AutomationProperties.Name="Palabra a traducir"/>
         </DockPanel>
 
-        <Border Grid.Row="2" BorderBrush="LightGray" BorderThickness="1" Background="White">
+        <Border Grid.Row="2" BorderBrush="LightGray" BorderThickness="1" Background="White"
+                HorizontalAlignment="Center" VerticalAlignment="Center">
             <Image x:Name="Personaje" Stretch="Uniform"
                    AutomationProperties.Name="Personaje que muestra la seña"/>
         </Border>
