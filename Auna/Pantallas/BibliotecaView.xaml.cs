@@ -26,10 +26,14 @@ namespace Auna.Pantallas
         {
             new Sena { Palabra = "Hola", Categoria = "Saludos" },
             new Sena { Palabra = "Gracias", Categoria = "Saludos" },
-            new Sena { Palabra = "Ayuda", Categoria = "Respuestas" },
+            new Sena { Palabra = "Ayuda", Categoria = "Comunicación" },
             new Sena { Palabra = "Remedio", Categoria = "Salud" },
             new Sena { Palabra = "Receta", Categoria = "Salud" },
-            new Sena { Palabra = "Dolor", Categoria = "Salud" }
+            new Sena { Palabra = "Dolor", Categoria = "Salud" },
+            new Sena { Palabra = "Sí", Categoria = "Respuestas" },
+            new Sena { Palabra = "No", Categoria = "Respuestas" },
+            new Sena { Palabra = "Necesito", Categoria = "Comunicación" },
+            new Sena { Palabra = "No entiendo", Categoria = "Respuestas" }
         };
 
         public BibliotecaView()
