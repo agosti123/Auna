@@ -5,6 +5,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.IO;
 using Auna.Servicios;
+using System.Globalization;
+using System.Text;
 
 namespace Auna.Pantallas
 {
@@ -26,10 +28,14 @@ namespace Auna.Pantallas
         {
             new Sena { Palabra = "Hola", Categoria = "Saludos" },
             new Sena { Palabra = "Gracias", Categoria = "Saludos" },
-            new Sena { Palabra = "Ayuda", Categoria = "Respuestas" },
+            new Sena { Palabra = "Ayuda", Categoria = "Comunicación" },
             new Sena { Palabra = "Remedio", Categoria = "Salud" },
             new Sena { Palabra = "Receta", Categoria = "Salud" },
-            new Sena { Palabra = "Dolor", Categoria = "Salud" }
+            new Sena { Palabra = "Dolor", Categoria = "Salud" },
+            new Sena { Palabra = "Sí", Categoria = "Respuestas" },
+            new Sena { Palabra = "No", Categoria = "Respuestas" },
+            new Sena { Palabra = "Necesito", Categoria = "Comunicación" },
+            new Sena { Palabra = "No entiendo", Categoria = "Respuestas" }
         };
 
         public BibliotecaView()
@@ -53,9 +59,24 @@ namespace Auna.Pantallas
                     (lstPalabras.SelectedItem as Sena)?.Palabra ?? "";
             };
 
+            lstPalabras.MouseDoubleClick += (s, e) =>
+            {
+                if (ItemsControl.ContainerFromElement(lstPalabras, e.OriginalSource as DependencyObject) is ListBoxItem)
+                    btnReproducir_Click(s, e);
+            };
+
             Unloaded += (_, _) => _reproductor.Detener();
 
             ActualizarLista();
+        }
+
+        private static string Normalizar(string s)
+        {
+            var sb = new StringBuilder();
+            foreach (char c in s.Normalize(NormalizationForm.FormD))
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                    sb.Append(c);
+            return sb.ToString().Normalize(NormalizationForm.FormC).ToLowerInvariant();
         }
 
 
@@ -72,7 +93,7 @@ namespace Auna.Pantallas
                 return;
             }
 
-            string palabra = sena.Palabra.Trim().ToLowerInvariant();
+            string palabra = Normalizar(sena.Palabra).Trim().Replace(' ', '_');
 
             string ruta = Path.Combine(
                 AppContext.BaseDirectory,
@@ -114,10 +135,11 @@ namespace Auna.Pantallas
         {
             string categoria = cmbCategoria.SelectedItem as string ?? "Todas";
             string texto = txtBuscar.Text.Trim();
+            string textoNorm = Normalizar(texto);
 
             var resultado = senas
                 .Where(s => (categoria == "Todas" || s.Categoria == categoria)
-                         && s.Palabra.Contains(texto, StringComparison.OrdinalIgnoreCase))
+                         && Normalizar(s.Palabra).Contains(textoNorm))
                 .ToList();
 
             lstPalabras.ItemsSource = resultado;
@@ -125,10 +147,10 @@ namespace Auna.Pantallas
             if (resultado.Count == 0 && texto.Length > 0)
             {
                 var cercana = senas
-                    .OrderBy(s => Distancia(s.Palabra.ToLower(), texto.ToLower()))
+                    .OrderBy(s => Distancia(Normalizar(s.Palabra), textoNorm))
                     .First();
-                bool parecida = Distancia(cercana.Palabra.ToLower(), texto.ToLower()) <= 2;
-
+                bool parecida = Distancia(Normalizar(cercana.Palabra), textoNorm) <= 2;
+                
                 txtSugerencia.Text = parecida
                     ? $"¿Quisiste decir «{cercana.Palabra.ToLower()}»?"
                     : "Probá con otra palabra.";

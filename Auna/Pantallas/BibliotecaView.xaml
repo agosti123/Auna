@@ -1,41 +1,107 @@
 ﻿<UserControl x:Class="Auna.Pantallas.BibliotecaView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Auna.Pantallas"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Margin="12">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
 
-        <StackPanel Grid.Column="0" Margin="0,0,12,0">
-            <TextBox x:Name="txtBuscar" FontSize="18" Margin="0,0,0,8"/>
+	<Grid Margin="16">
+		<Grid.RowDefinitions>
+			<!-- Buscador -->
+			<RowDefinition Height="Auto"/>
 
-            <Border x:Name="panelSinResultados" Visibility="Collapsed"
-                Background="#FDF3E0" BorderBrush="#E0A000" BorderThickness="2" Padding="8" Margin="0,0,0,8">
-                <StackPanel>
-                    <TextBlock Text="Sin resultados" FontWeight="Bold" FontSize="16"/>
-                    <TextBlock x:Name="txtSugerencia" FontSize="14"/>
-                </StackPanel>
-            </Border>
+			<!-- Categorías y lista de palabras -->
+			<RowDefinition Height="2*" MinHeight="140"/>
 
-            <ComboBox x:Name="cmbCategoria" FontSize="16" Margin="0,0,0,8"/>
-            <ListBox x:Name="lstPalabras" FontSize="18" Height="220"/>
-        </StackPanel>
+			<!-- Video: ocupa el espacio restante -->
+			<RowDefinition Height="3*"/>
 
-        <StackPanel Grid.Column="1">
-            <Border BorderBrush="#7030A0" BorderThickness="2" Height="240" Margin="0,0,0,8">
-                <Grid>
-                    <Image x:Name="imgSena" Stretch="Uniform"/>
-                    <TextBlock x:Name="txtNombreSena" VerticalAlignment="Bottom"
-                           HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Margin="8"/>
-                </Grid>
-            </Border>
-            <Button x:Name="btnReproducir" Content="▶ Reproducir" FontSize="16" Padding="8" Click="btnReproducir_Click"/>
-        </StackPanel>
-    </Grid>
+			<!-- Botón -->
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+
+		<!-- Buscador -->
+		<TextBox x:Name="txtBuscar"
+				 Grid.Row="0"
+				 FontSize="18"
+				 Padding="8"
+				 Margin="0,0,0,12"
+				 ToolTip="Buscar una palabra"/>
+
+		<!-- Categoría y lista: el ListBox ocupa el espacio restante y hace scroll -->
+		<Grid Grid.Row="1" Margin="0,0,0,12">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+			<Border x:Name="panelSinResultados"
+					Grid.Row="0"
+					Visibility="Collapsed"
+					Background="#FDF3E0"
+					BorderBrush="#E0A000"
+					BorderThickness="2"
+					Padding="8"
+					Margin="0,0,0,8">
+				<StackPanel>
+					<TextBlock Text="Sin resultados"
+							   FontWeight="Bold"
+							   FontSize="16"/>
+					<TextBlock x:Name="txtSugerencia"
+							   FontSize="14"/>
+				</StackPanel>
+			</Border>
+
+			<ComboBox x:Name="cmbCategoria"
+					  Grid.Row="1"
+					  FontSize="16"
+					  Padding="6"
+					  Margin="0,0,0,8"/>
+
+			<ListBox x:Name="lstPalabras"
+					 Grid.Row="2"
+					 FontSize="18"
+					 MinHeight="60"/>
+		</Grid>
+
+		<!-- Video adaptable, debajo del buscador y la lista -->
+		<Grid Grid.Row="2" Margin="0,0,0,8">
+			<Border BorderBrush="#7030A0"
+					BorderThickness="2"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Stretch"
+					MaxWidth="600"
+					MinWidth="300"
+					MinHeight="100">
+				<Grid>
+					<Image x:Name="imgSena"
+						   Stretch="Uniform"
+						   HorizontalAlignment="Stretch"
+						   VerticalAlignment="Stretch"/>
+
+					<TextBlock x:Name="txtNombreSena"
+							   VerticalAlignment="Bottom"
+							   HorizontalAlignment="Center"
+							   FontSize="20"
+							   FontWeight="Bold"
+							   Margin="8"
+							   Background="#EFFFFFFF"
+							   TextWrapping="Wrap"/>
+				</Grid>
+			</Border>
+		</Grid>
+
+		<!-- Botón para reproducir -->
+		<Button x:Name="btnReproducir"
+				Grid.Row="3"
+				Content="▶ Reproducir"
+				FontSize="16"
+				Padding="8"
+				Width="180"
+				HorizontalAlignment="Center"
+				Click="btnReproducir_Click"/>
+	</Grid>
 </UserControl>
