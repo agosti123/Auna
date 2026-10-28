@@ -13,7 +13,7 @@
 			<RowDefinition Height="Auto"/>
 
 			<!-- Categorías y lista de palabras -->
-			<RowDefinition Height="2*"/>
+			<RowDefinition Height="2*" MinHeight="140"/>
 
 			<!-- Video: ocupa el espacio restante -->
 			<RowDefinition Height="3*"/>
@@ -30,9 +30,16 @@
 				 Margin="0,0,0,12"
 				 ToolTip="Buscar una palabra"/>
 
-		<!-- Lista de palabras -->
-		<StackPanel Grid.Row="1" Margin="0,0,0,12">
+		<!-- Categoría y lista: el ListBox ocupa el espacio restante y hace scroll -->
+		<Grid Grid.Row="1" Margin="0,0,0,12">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
 			<Border x:Name="panelSinResultados"
+					Grid.Row="0"
 					Visibility="Collapsed"
 					Background="#FDF3E0"
 					BorderBrush="#E0A000"
@@ -49,14 +56,16 @@
 			</Border>
 
 			<ComboBox x:Name="cmbCategoria"
+					  Grid.Row="1"
 					  FontSize="16"
 					  Padding="6"
 					  Margin="0,0,0,8"/>
 
 			<ListBox x:Name="lstPalabras"
+					 Grid.Row="2"
 					 FontSize="18"
 					 MinHeight="60"/>
-		</StackPanel>
+		</Grid>
 
 		<!-- Video adaptable, debajo del buscador y la lista -->
 		<Grid Grid.Row="2" Margin="0,0,0,8">
